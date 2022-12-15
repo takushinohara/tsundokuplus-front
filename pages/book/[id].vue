@@ -5,7 +5,7 @@
       <div class="border rounded-lg overflow-hidden">
         <div class="h-48 bg-gray-100">
           <img
-            :src="book.thumbnail"
+            :src="book.thumbnail.replace('http', 'https')"
             loading="lazy"
             :alt="book.title"
             class="w-full h-full object-cover object-center"

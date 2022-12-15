@@ -26,7 +26,7 @@
           <div>
             <NuxtLink :to="`/book/${tsundoku.id}`" class="group h-80 block bg-gray-100 rounded-lg overflow-hidden relative mb-2 lg:mb-3">
               <img
-                v-bind:src="tsundoku.thumbnail"
+                v-bind:src="tsundoku.thumbnail.replace('http', 'https')"
                 loading="lazy"
                 v-bind:alt="tsundoku.title"
                 class="h-full object-cover object-center group-hover:scale-110 transition duration-200"

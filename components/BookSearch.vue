@@ -31,7 +31,7 @@
             <div v-for="book in bookSummaryList">
               <li class="bg-gray-100 overflow-hidden rounded-lg shadow-lg mb-2 sm:mb-4">
                 <div class="flex justify-between items-end gap-4 m-2">
-                  <img :src=book.smallThumbnail loading="lazy" alt="Photo by Radu Florin" />
+                  <img :src="book.smallThumbnail.replace('http', 'https')" loading="lazy" alt="Photo by Radu Florin" />
                   <ul class="h-40">
                     <li>{{ book.title }}</li>
                     <li>{{ book.author }}</li>
