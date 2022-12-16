@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white py-6 sm:py-8 lg:py-12">
+  <div class="bg-white">
 
     <div class="max-w-screen-2xl px-4 md:px-8 mx-auto">
       <div class="flex justify-between items-end gap-4 mb-6">
@@ -21,33 +21,26 @@
     </div>
 
     <div class="max-w-screen-2xl px-4 md:px-8 mx-auto">
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 md:gap-x-6 gap-y-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-x-4 md:gap-x-8 gap-y-12">
         <div v-if="books.length" v-for="tsundoku in books">
           <div>
-            <NuxtLink :to="`/book/${tsundoku.id}`" class="group h-80 block bg-gray-100 rounded-lg overflow-hidden relative mb-2 lg:mb-3">
+            <NuxtLink :to="`/book/${tsundoku.id}`" class="group h-48 block rounded-lg overflow-hidden relative mb-2 lg:mb-3">
               <img
-                v-bind:src="tsundoku.thumbnail.replace('http', 'https')"
+                :src="tsundoku.thumbnail.replace('http', 'https')"
                 loading="lazy"
-                v-bind:alt="tsundoku.title"
+                :alt="tsundoku.title"
                 class="h-full object-cover object-center group-hover:scale-110 transition duration-200"
               />
-
-              <span class="bg-red-500 text-white text-sm tracking-wider uppercase rounded-br-lg absolute left-0 top-0 px-3 py-1.5">
-                Reading
-              </span>
             </NuxtLink>
 
             <div>
-              <NuxtLink :to="`/book/${tsundoku.id}`" class="text-gray-500 hover:gray-800 lg:text-lg transition duration-100 mb-1">{{ tsundoku.title }}</NuxtLink>
+              <NuxtLink :to="`/book/${tsundoku.id}`" class="text-gray-500 hover:gray-800 text-sm font-semibold transition duration-100 mb-1">{{ tsundoku.title }}</NuxtLink>
 
               <div class="flex items-end gap-2">
-                <span class="text-gray-800 lg:text-lg font-bold">{{ tsundoku.author }}</span>
-                <span class="text-gray-500 mb-0.5">{{ tsundoku.publisher }}</span>
+                <span class="text-gray-500 text-sm">{{ tsundoku.author }}</span>
+                <span class="text-gray-400 text-sm">{{ tsundoku.publisher }}</span>
               </div>
             </div>
-            <button @click="deleteBook(tsundoku.id)" class="inline-block bg-red-500 hover:bg-red-600 active:bg-indigo-700 focus-visible:ring ring-indigo-300 text-white text-sm md:text-base font-medium text-center rounded-lg outline-none transition duration-100 px-4 py-2 mt-2">
-              Delete
-            </button>
           </div>
         </div>
         <div v-if="state.hasNoBooks">

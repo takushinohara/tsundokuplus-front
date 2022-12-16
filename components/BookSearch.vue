@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="max-w-screen-2xl px-4 md:px-8 mx-auto">
     <div class="max-w-screen-md grid sm:grid-cols-2 gap-4 mx-auto">
       <div class="sm:col-span-2">
         <input
@@ -12,16 +12,16 @@
       </div>
 
       <div class="sm:col-span-2 flex justify-between items-center">
-        <NuxtLink to="/home" class="inline-block focus-visible:ring ring-indigo-300 text-gray-500 hover:text-indigo-500 active:text-indigo-600 text-sm md:text-base text-center rounded-lg outline-none transition duration-100 px-4 py-2">
-          Go back
-        </NuxtLink>
+        <button @click="useRouter().push('/home')" class="inline-block bg-gray-50 hover:bg-gray-100 active:bg-gray-200 focus-visible:ring ring-indigo-300 text-gray-500 hover:text-indigo-500 active:text-indigo-600 text-sm md:text-base font-semibold text-center rounded-lg outline-none transition duration-100 px-4 py-2">
+          &lt; Go back
+        </button>
         <button @click="getNewBooks" class="inline-block bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 focus-visible:ring ring-indigo-300 text-white text-sm md:text-base text-center rounded-lg outline-none transition duration-100 px-4 py-2">
           Search
         </button>
       </div>
     </div>
 
-    <div class="max-w-screen-md grid sm:grid-cols-1 mx-auto">
+    <div class="max-w-screen-md grid sm:grid-cols-1 mx-auto mt-2">
       <div v-if="state.isLoading">
         Loading...
       </div>
@@ -31,7 +31,7 @@
             <div v-for="book in bookSummaryList">
               <li class="bg-gray-100 overflow-hidden rounded-lg shadow-lg mb-2 sm:mb-4">
                 <div class="flex justify-between items-end gap-4 m-2">
-                  <img :src="book.smallThumbnail.replace('http', 'https')" loading="lazy" alt="Photo by Radu Florin" />
+                  <img :src="book.smallThumbnail.replace('http', 'https')" loading="lazy" :alt="book.title" />
                   <ul class="h-40">
                     <li>{{ book.title }}</li>
                     <li>{{ book.author }}</li>
