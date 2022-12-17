@@ -70,7 +70,10 @@ definePageMeta({
 })
 
 import { computed, onMounted, ref } from 'vue'
+import { useToast } from "vue-toast-notification"
+import 'vue-toast-notification/dist/theme-sugar.css'
 
+const toast = useToast()
 const route = useRoute()
 const config = useRuntimeConfig()
 
@@ -82,31 +85,75 @@ const state = ref({
 
 async function getBook() {
   state.value.isLoading = true
-  state.value.fetchResult = await $fetch(`${config.public.tsundokuApiBaseUrl}/book/${route.params.id}`, {credentials: 'include'})
+  state.value.fetchResult = await $fetch(`${config.public.tsundokuApiBaseUrl}/book/${route.params.id}`,
+    {
+      credentials: 'include',
+      async onResponse({ response }) {
+        switch (response.status) {
+          case 200: break
+          case 401: useRouter().push('/login'); break
+          default: toast.error('Oops! Something went wrong.')
+        }
+      }
+    })
   state.value.note = state.value.fetchResult.note
   state.value.isLoading = false
 }
 
 async function save() {
-  const csrfToken = await $fetch(`${config.public.tsundokuApiBaseUrl}/csrf-token`, { credentials: 'include' })
+  const csrfToken = await $fetch(`${config.public.tsundokuApiBaseUrl}/csrf-token`,
+    {
+      credentials: 'include',
+      async onResponse({ response }) {
+        switch (response.status) {
+          case 200: break
+          case 401: useRouter().push('/login'); break
+          default: toast.error('Oops! Something went wrong.')
+        }
+      }
+    })
   await $fetch(`${config.public.tsundokuApiBaseUrl}/book/${route.params.id}`,
     {
       method: 'PUT',
       headers: { 'X-CSRF-TOKEN': csrfToken.token },
       body: { "note": state.value.note.contents },
-      credentials: 'include'
+      credentials: 'include',
+      async onResponse({ response }) {
+        switch (response.status) {
+          case 204: toast.success('Done!'); break
+          case 401: useRouter().push('/login'); break
+          default: toast.error('Oops! Something went wrong.')
+        }
+      }
     }).then(getBook)
 }
 
 async function deleteBook() {
-  const csrfToken = await $fetch(`${config.public.tsundokuApiBaseUrl}/csrf-token`, { credentials: 'include' })
+  const csrfToken = await $fetch(`${config.public.tsundokuApiBaseUrl}/csrf-token`,
+    {
+      credentials: 'include',
+      async onResponse({ response }) {
+        switch (response.status) {
+          case 200: break
+          case 401: useRouter().push('/login'); break
+          default: toast.error('Oops! Something went wrong.')
+        }
+      }
+    })
   await $fetch(`${config.public.tsundokuApiBaseUrl}/book/${route.params.id}`,
     {
       method: 'DELETE',
       headers: { 'X-CSRF-TOKEN': csrfToken.token },
       body: {},
-      credentials: 'include'
-    }).then(useRouter().push('/home'))
+      credentials: 'include',
+      async onResponse({ response }) {
+        switch (response.status) {
+          case 204: toast.success('Done!'); useRouter().push('/home'); break
+          case 401: useRouter().push('/login'); break
+          default: toast.error('Oops! Something went wrong.')
+        }
+      }
+    })
 }
 
 const book = computed(() => {

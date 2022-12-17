@@ -52,7 +52,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useToast } from "vue-toast-notification"
+import 'vue-toast-notification/dist/theme-sugar.css'
 
+const toast = useToast()
 const config = useRuntimeConfig()
 const googleBooksApiURL = "https://www.googleapis.com/books/v1"
 
@@ -90,7 +93,15 @@ const bookSummaryList = computed(() => {
 
 async function getNewBooks() {
   state.value.isLoading = true
-  state.value.searchResult = await $fetch(`${googleBooksApiURL}/volumes?q=${state.value.searchQuery}`)
+  state.value.searchResult = await $fetch(`${googleBooksApiURL}/volumes?q=${state.value.searchQuery}`,
+    {
+      async onResponse({ response }) {
+        switch (response.status) {
+          case 200: break
+          default: toast.error('Oops! Something went wrong.')
+        }
+      }
+    })
   state.value.isLoading = false
 }
 
@@ -108,20 +119,38 @@ async function addBook(id) {
       : ''
   const publisher = item.volumeInfo.publisher
 
-  const csrfToken = await $fetch(`${config.public.tsundokuApiBaseUrl}/csrf-token`, { credentials: 'include' })
+  const csrfToken = await $fetch(`${config.public.tsundokuApiBaseUrl}/csrf-token`,
+    {
+      credentials: 'include',
+      async onResponse({ response }) {
+        switch (response.status) {
+          case 200: break
+          case 401: useRouter().push('/login'); break
+          default: toast.error('Oops! Something went wrong.')
+        }
+      }
+    })
+
   await $fetch(`${config.public.tsundokuApiBaseUrl}/book`,
-      {
-        method: 'POST',
-        headers: { 'X-CSRF-TOKEN': csrfToken.token },
-        body: {
-          "title": title,
-          "author": author,
-          "publisher": publisher,
-          "thumbnail": thumbnail,
-          "smallThumbnail": smallThumbnail
-        },
-        credentials: 'include'
-      })
+    {
+      method: 'POST',
+      headers: { 'X-CSRF-TOKEN': csrfToken.token },
+      body: {
+        "title": title,
+        "author": author,
+        "publisher": publisher,
+        "thumbnail": thumbnail,
+        "smallThumbnail": smallThumbnail
+      },
+      credentials: 'include',
+      async onResponse({ response }) {
+        switch (response.status) {
+          case 201: toast.success('Done!'); break
+          case 401: useRouter().push('/login'); break
+          default: toast.error('Oops! Something went wrong.')
+        }
+      }
+    })
 }
 </script>
 

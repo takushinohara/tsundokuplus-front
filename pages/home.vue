@@ -57,8 +57,11 @@ definePageMeta({
   middleware: 'auth'
 })
 
-import { computed, onMounted, ref } from "vue";
+import { ref, computed, onMounted } from "vue"
+import { useToast } from "vue-toast-notification"
+import 'vue-toast-notification/dist/theme-sugar.css'
 
+const toast = useToast()
 const config = useRuntimeConfig()
 
 const state = ref({
@@ -75,21 +78,20 @@ const books = computed(() => {
 
 async function getBooks() {
   state.value.isLoading = true
-  state.value.fetchResult = await $fetch(`${config.public.tsundokuApiBaseUrl}/book/list`, {credentials: 'include'})
+  state.value.fetchResult = await $fetch(`${config.public.tsundokuApiBaseUrl}/book/list`,
+    {
+      credentials: 'include',
+      async onResponse({ response }) {
+        switch (response.status) {
+          case 200: break
+          case 401: useRouter().push('/login'); break
+          default: toast.error('Oops! Something went wrong.')
+        }
+      },
+    })
   state.value.isLoading = false
 
   state.value.hasNoBooks = state.value.fetchResult.bookList.length === 0;
-}
-
-async function deleteBook(id) {
-  const csrfToken = await $fetch(`${config.public.tsundokuApiBaseUrl}/csrf-token`, { credentials: 'include' })
-  await $fetch(`${config.public.tsundokuApiBaseUrl}/book/${id}`,
-    {
-      method: 'DELETE',
-      headers: { 'X-CSRF-TOKEN': csrfToken.token },
-      body: {},
-      credentials: 'include'
-    }).then(getBooks)
 }
 
 onMounted(() => {

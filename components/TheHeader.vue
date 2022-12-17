@@ -46,18 +46,38 @@
 <script setup lang="ts">
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { ChevronDownIcon } from '@heroicons/vue/20/solid'
+import { useToast } from "vue-toast-notification"
+import 'vue-toast-notification/dist/theme-sugar.css'
 
+const toast = useToast()
 const { loginStatus, user, setUser, logout } = useAuth()
 const config = useRuntimeConfig()
 
 async function doLogout() {
-  const csrfToken = await $fetch(`${config.public.tsundokuApiBaseUrl}/csrf-token`, { credentials: 'include' })
+  const csrfToken = await $fetch(`${config.public.tsundokuApiBaseUrl}/csrf-token`,
+    {
+      credentials: 'include',
+      async onResponse({ response }) {
+        switch (response.status) {
+          case 200: break
+          case 401: useRouter().push('/login'); break
+          default: toast.error('Oops! Something went wrong.')
+        }
+      }
+    })
   await $fetch(`${config.public.tsundokuApiBaseUrl}/logout`,
     {
       method: 'POST',
       headers: { 'X-CSRF-TOKEN': csrfToken.token },
       body: {},
-      credentials: 'include'
+      credentials: 'include',
+      async onResponse({ response }) {
+        switch (response.status) {
+          case 200: break
+          case 401: useRouter().push('/login'); break
+          default: toast.error('Oops! Something went wrong.')
+        }
+      },
     }).then(setupLogout)
 }
 

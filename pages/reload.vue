@@ -19,7 +19,17 @@ const config = useRuntimeConfig()
 onMounted(async () => {
   if (sessionStorage.getItem('loginStatus') === '1') {
     login()
-    const user = await $fetch(`${config.public.tsundokuApiBaseUrl}/user`, { credentials: 'include' })
+    const user = await $fetch(`${config.public.tsundokuApiBaseUrl}/user`,
+      {
+        credentials: 'include',
+        async onResponse({ response }) {
+          switch (response.status) {
+            case 200: break
+            case 401: useRouter().push('/login'); break
+            default: toast.error('Oops! Something went wrong.')
+          }
+        },
+      })
     setUser(user)
   } else {
     useRouter().push('/login')

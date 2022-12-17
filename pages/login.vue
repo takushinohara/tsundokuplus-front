@@ -50,7 +50,10 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { useToast } from "vue-toast-notification"
+import 'vue-toast-notification/dist/theme-sugar.css'
 
+const toast = useToast()
 const { login, setUser } = useAuth()
 const config = useRuntimeConfig()
 
@@ -69,14 +72,30 @@ async function doLogin(withDemoUser: boolean) {
         "email": email,
         "password": password
       },
-      credentials: 'include'
+      credentials: 'include',
+      async onResponse({ response }) {
+        switch (response.status) {
+          case 200: break
+          case 401: toast.error('Email or password is not correct.'); break
+          default: toast.error('Oops! Something went wrong.')
+        }
+      },
     }).then(setupLogin)
 }
 
 async function setupLogin() {
   sessionStorage.setItem('loginStatus', '1')
   await login()
-  const user = await $fetch(`${config.public.tsundokuApiBaseUrl}/user`, { credentials: 'include' })
+  const user = await $fetch(`${config.public.tsundokuApiBaseUrl}/user`,
+    {
+      credentials: 'include',
+      async onResponse({ response }) {
+        switch (response.status) {
+          case 200: break
+          default: toast.error('Oops! Something went wrong.')
+        }
+      },
+    })
   await setUser(user)
 }
 </script>
