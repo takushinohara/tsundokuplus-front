@@ -12,5 +12,8 @@ export default defineNuxtConfig({
         password: process.env.DEMO_USER_PASSWORD
       }
     }
+  },
+  experimental: {
+    payloadExtraction: false
   }
 })
