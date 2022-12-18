@@ -12,7 +12,9 @@ definePageMeta({
 });
 
 import { onMounted } from "vue";
+import { useNotification } from "@kyvg/vue3-notification";
 
+const { notify } = useNotification()
 const { login, setUser } = useAuth()
 const config = useRuntimeConfig()
 
@@ -26,7 +28,7 @@ onMounted(async () => {
           switch (response.status) {
             case 200: break
             case 401: useRouter().push('/login'); break
-            default: toast.error('Oops! Something went wrong.')
+            default:  notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
           }
         },
       })

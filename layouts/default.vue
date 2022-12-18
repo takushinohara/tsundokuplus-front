@@ -3,6 +3,7 @@
     <TheHeader />
     <slot />
     <TheFooter />
+    <notifications />
   </div>
 </template>
 

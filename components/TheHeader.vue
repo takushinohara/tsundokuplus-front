@@ -46,10 +46,9 @@
 <script setup lang="ts">
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { ChevronDownIcon } from '@heroicons/vue/20/solid'
-import { useToast } from "vue-toast-notification"
-import 'vue-toast-notification/dist/theme-sugar.css'
+import { useNotification } from "@kyvg/vue3-notification";
 
-const toast = useToast()
+const { notify } = useNotification()
 const { loginStatus, user, setUser, logout } = useAuth()
 const config = useRuntimeConfig()
 
@@ -61,7 +60,7 @@ async function doLogout() {
         switch (response.status) {
           case 200: break
           case 401: useRouter().push('/login'); break
-          default: toast.error('Oops! Something went wrong.')
+          default: notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
         }
       }
     })
@@ -75,7 +74,7 @@ async function doLogout() {
         switch (response.status) {
           case 200: break
           case 401: useRouter().push('/login'); break
-          default: toast.error('Oops! Something went wrong.')
+          default: notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
         }
       },
     }).then(setupLogout)

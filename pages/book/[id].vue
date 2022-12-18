@@ -70,10 +70,9 @@ definePageMeta({
 })
 
 import { computed, onMounted, ref } from 'vue'
-import { useToast } from "vue-toast-notification"
-import 'vue-toast-notification/dist/theme-sugar.css'
+import { useNotification } from "@kyvg/vue3-notification";
 
-const toast = useToast()
+const { notify } = useNotification()
 const route = useRoute()
 const config = useRuntimeConfig()
 
@@ -92,7 +91,7 @@ async function getBook() {
         switch (response.status) {
           case 200: break
           case 401: useRouter().push('/login'); break
-          default: toast.error('Oops! Something went wrong.')
+          default: notify({ title: "Test", text: "This is Test!" });
         }
       }
     })
@@ -108,7 +107,7 @@ async function save() {
         switch (response.status) {
           case 200: break
           case 401: useRouter().push('/login'); break
-          default: toast.error('Oops! Something went wrong.')
+          default:  notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
         }
       }
     })
@@ -120,9 +119,9 @@ async function save() {
       credentials: 'include',
       async onResponse({ response }) {
         switch (response.status) {
-          case 204: toast.success('Done!'); break
+          case 204: notify({ type: "success", title: "Success", text: "The book has been saved." }); break
           case 401: useRouter().push('/login'); break
-          default: toast.error('Oops! Something went wrong.')
+          default: notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
         }
       }
     }).then(getBook)
@@ -136,7 +135,7 @@ async function deleteBook() {
         switch (response.status) {
           case 200: break
           case 401: useRouter().push('/login'); break
-          default: toast.error('Oops! Something went wrong.')
+          default: notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
         }
       }
     })
@@ -148,9 +147,11 @@ async function deleteBook() {
       credentials: 'include',
       async onResponse({ response }) {
         switch (response.status) {
-          case 204: toast.success('Done!'); useRouter().push('/home'); break
+          case 204:
+            notify({ type: "success", title: "Success", text: "The book has been deleted." });
+            useRouter().push('/home'); break
           case 401: useRouter().push('/login'); break
-          default: toast.error('Oops! Something went wrong.')
+          default: notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
         }
       }
     })

@@ -50,10 +50,9 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useToast } from "vue-toast-notification"
-import 'vue-toast-notification/dist/theme-sugar.css'
+import { useNotification } from "@kyvg/vue3-notification";
 
-const toast = useToast()
+const { notify } = useNotification()
 const { login, setUser } = useAuth()
 const config = useRuntimeConfig()
 
@@ -76,8 +75,8 @@ async function doLogin(withDemoUser: boolean) {
       async onResponse({ response }) {
         switch (response.status) {
           case 200: break
-          case 401: toast.error('Email or password is not correct.'); break
-          default: toast.error('Oops! Something went wrong.')
+          case 401: notify({ type: "error", title: "Login failed", text: "Email or password is not correct." }); break
+          default: notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
         }
       },
     }).then(setupLogin)
@@ -92,7 +91,7 @@ async function setupLogin() {
       async onResponse({ response }) {
         switch (response.status) {
           case 200: break
-          default: toast.error('Oops! Something went wrong.')
+          default: notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
         }
       },
     })

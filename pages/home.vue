@@ -58,10 +58,9 @@ definePageMeta({
 })
 
 import { ref, computed, onMounted } from "vue"
-import { useToast } from "vue-toast-notification"
-import 'vue-toast-notification/dist/theme-sugar.css'
+import { useNotification } from "@kyvg/vue3-notification";
 
-const toast = useToast()
+const { notify } = useNotification()
 const config = useRuntimeConfig()
 
 const state = ref({
@@ -85,7 +84,7 @@ async function getBooks() {
         switch (response.status) {
           case 200: break
           case 401: useRouter().push('/login'); break
-          default: toast.error('Oops! Something went wrong.')
+          default:  notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
         }
       },
     })
