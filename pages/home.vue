@@ -3,15 +3,10 @@
 
     <div class="max-w-screen-2xl px-4 md:px-8 mx-auto">
       <div class="flex justify-between items-end gap-4 mb-6">
-        <form class="w-full md:max-w-md flex gap-2">
-          <input placeholder="Explore your books" class="w-full flex-1 bg-gray-50 text-gray-800 placeholder-gray-500 border focus:ring ring-indigo-300 rounded outline-none transition duration-100 px-3 py-2" />
+        <div class="w-full md:max-w-md flex gap-2">
+          <input v-model="state.filterKeyword" placeholder="Filter your books" class="w-full flex-1 bg-gray-50 text-gray-800 placeholder-gray-500 border focus:ring ring-indigo-300 rounded outline-none transition duration-100 px-3 py-2" />
+        </div>
 
-          <button class="inline-block bg-white hover:bg-gray-100 active:bg-gray-200 focus-visible:ring ring-indigo-300 border text-gray-500 text-sm md:text-base font-semibold text-center rounded-lg outline-none transition duration-100 px-4 md:px-8 py-2 md:py-3">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </button>
-        </form>
         <NuxtLink to="/add" class="inline-block bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 focus-visible:ring ring-indigo-300 text-white text-sm md:text-base font-semibold text-center rounded outline-none transition duration-100 px-8 py-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -22,7 +17,7 @@
 
     <div class="max-w-screen-2xl px-4 md:px-8 mx-auto">
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-x-4 md:gap-x-8 gap-y-12">
-        <div v-if="books.length" v-for="tsundoku in books">
+        <div v-if="books.length" v-for="tsundoku in filteredBooks">
           <div>
             <NuxtLink :to="`/book/${tsundoku.id}`" class="group h-48 block rounded-lg overflow-hidden relative mb-2 lg:mb-3">
               <img
@@ -68,11 +63,29 @@ const state = ref({
   fetchResult: {
     bookList: []
   },
+  filterKeyword: '',
   hasNoBooks: false
 })
 
 const books = computed(() => {
   return state.value.fetchResult.bookList
+})
+
+const filteredBooks = computed(() => {
+  const targetKeys = ["title", "author", "publisher"]
+  let data = state.value.fetchResult.bookList
+  let keyword = state.value.filterKeyword
+  if (keyword) {
+    keyword = keyword.toLowerCase()
+    data = data.filter((row) => {
+      return Object.keys(row).some((key) => {
+        if (!targetKeys.includes(key)) return false
+        return String(row[key]).toLowerCase().indexOf(keyword) > -1
+      })
+    })
+  }
+
+  return data
 })
 
 async function getBooks() {
