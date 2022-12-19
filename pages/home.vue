@@ -16,30 +16,35 @@
     </div>
 
     <div class="max-w-screen-2xl px-4 md:px-8 mx-auto">
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-x-4 md:gap-x-8 gap-y-12">
-        <div v-if="books.length" v-for="tsundoku in filteredBooks">
-          <div>
-            <NuxtLink :to="`/book/${tsundoku.id}`" class="group h-48 block rounded-lg overflow-hidden relative mb-2 lg:mb-3">
-              <img
-                :src="tsundoku.thumbnail.replace('http', 'https')"
-                loading="lazy"
-                :alt="tsundoku.title"
-                class="h-full object-cover object-center group-hover:scale-110 transition duration-200"
-              />
-            </NuxtLink>
-
+      <div v-if="state.isLoading">
+        <Loading />
+      </div>
+      <div v-else>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-x-4 md:gap-x-8 gap-y-12">
+          <div v-if="books.length" v-for="tsundoku in filteredBooks">
             <div>
-              <NuxtLink :to="`/book/${tsundoku.id}`" class="text-gray-500 hover:gray-800 text-sm font-semibold transition duration-100 mb-1">{{ tsundoku.title }}</NuxtLink>
+              <NuxtLink :to="`/book/${tsundoku.id}`" class="group h-48 block rounded-lg overflow-hidden relative mb-2 lg:mb-3">
+                <img
+                  :src="tsundoku.thumbnail.replace('http', 'https')"
+                  loading="lazy"
+                  :alt="tsundoku.title"
+                  class="h-full object-cover object-center group-hover:scale-110 transition duration-200"
+                />
+              </NuxtLink>
 
-              <div class="flex items-end gap-2">
-                <span class="text-gray-500 text-sm">{{ tsundoku.author }}</span>
-                <span class="text-gray-400 text-sm">{{ tsundoku.publisher }}</span>
+              <div>
+                <NuxtLink :to="`/book/${tsundoku.id}`" class="text-gray-500 hover:text-gray-800 text-sm font-semibold transition duration-100 mb-1">{{ tsundoku.title }}</NuxtLink>
+
+                <div class="flex items-end gap-2">
+                  <span class="text-gray-500 text-sm">{{ tsundoku.author }}</span>
+                  <span class="text-gray-400 text-sm">{{ tsundoku.publisher }}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div v-if="state.hasNoBooks">
-          Let's add your first Tsundoku!
+          <div v-if="state.hasNoBooks">
+            Let's add your first Tsundoku!
+          </div>
         </div>
       </div>
     </div>
@@ -54,6 +59,7 @@ definePageMeta({
 
 import { ref, computed, onMounted } from "vue"
 import { useNotification } from "@kyvg/vue3-notification";
+import { Loading } from "#components";
 
 const { notify } = useNotification()
 const config = useRuntimeConfig()

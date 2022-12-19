@@ -1,8 +1,6 @@
 <template>
   <div class="bg-white py-6 sm:py-8 lg:py-12">
-    <div>
-      reloading...
-    </div>
+    <Loading />
   </div>
 </template>
 
@@ -13,6 +11,7 @@ definePageMeta({
 
 import { onMounted } from "vue";
 import { useNotification } from "@kyvg/vue3-notification";
+import { Loading } from "#components";
 
 const { notify } = useNotification()
 const { login, setUser } = useAuth()

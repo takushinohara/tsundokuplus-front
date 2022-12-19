@@ -3,11 +3,11 @@
     <div class="max-w-screen-md grid sm:grid-cols-2 gap-4 mx-auto">
       <div class="sm:col-span-2">
         <input
-            type="search"
-            name="subject"
-            placeholder="Search new books"
-            class="w-full bg-gray-50 text-gray-800 border focus:ring ring-indigo-300 rounded outline-none transition duration-100 px-3 py-2"
-            v-model="state.searchQuery"
+          type="search"
+          name="subject"
+          placeholder="Search new books"
+          class="w-full bg-gray-50 text-gray-800 border focus:ring ring-indigo-300 rounded outline-none transition duration-100 px-3 py-2"
+          v-model="state.searchQuery"
         />
       </div>
 
@@ -23,27 +23,26 @@
 
     <div class="max-w-screen-md grid sm:grid-cols-1 mx-auto mt-2">
       <div v-if="state.isLoading">
-        Loading...
+        <Loading />
       </div>
       <div v-else>
         <div v-if="bookSummaryList !== ''">
-          <ul>
-            <div v-for="book in bookSummaryList">
-              <li class="bg-gray-100 overflow-hidden rounded-lg shadow-lg mb-2 sm:mb-4">
-                <div class="flex justify-between items-end gap-4 m-2">
-                  <img :src="book.smallThumbnail.replace('http', 'https')" loading="lazy" :alt="book.title" />
-                  <ul class="h-40">
-                    <li>{{ book.title }}</li>
-                    <li>{{ book.author }}</li>
-                    <li>{{ book.publisher }}</li>
-                  </ul>
-                  <button @click="addBook(book.id)" class="inline-block bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 focus-visible:ring ring-indigo-300 text-white text-sm md:text-base text-center rounded-lg outline-none transition duration-100 px-4 py-2">
-                    Add
+          <div v-for="book in bookSummaryList">
+            <div class="flex items-center bg-white border rounded-lg shadow-md hover:bg-gray-100 mb-2">
+              <img :src="book.smallThumbnail.replace('http', 'https')" loading="lazy" :alt="book.title" />
+              <div class="flex flex-col w-full justify-between p-4 leading-normal">
+                <h5 class="text-sm md:text-base font-bold tracking-tight text-gray-900">{{ book.title }}</h5>
+                <p class="text-sm md:text-base text-gray-700">{{ book.author }}</p>
+                <p class="text-sm md:text-base text-gray-500">{{ book.publisher }}</p>
+                <div class="flex flex-row-reverse mt-5">
+                  <button :disabled="isAdding(book.id)" @click="addBook(book.id)" class="inline-block bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 focus-visible:ring ring-indigo-300 text-white text-sm md:text-base text-center rounded-lg outline-none transition duration-100 px-4 py-2">
+                    <LoadingButtonIcon :show="isAdding(book.id)"/>
+                    {{ isAdding(book.id) ? "Adding..." : "Add" }}
                   </button>
                 </div>
-              </li>
+              </div>
             </div>
-          </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -53,6 +52,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useNotification } from "@kyvg/vue3-notification";
+import { Loading, LoadingButtonIcon } from "#components";
 
 const { notify } = useNotification()
 const config = useRuntimeConfig()
@@ -61,7 +61,11 @@ const googleBooksApiURL = "https://www.googleapis.com/books/v1"
 const state = ref({
   searchQuery: null,
   searchResult: null,
-  isLoading: false
+  isLoading: false,
+  isAdding: {
+    status: false,
+    id: null
+  }
 })
 
 const bookSummaryList = computed(() => {
@@ -90,6 +94,20 @@ const bookSummaryList = computed(() => {
   }
 })
 
+function isAdding(bookId): boolean {
+  return state.value.isAdding.status && state.value.isAdding.id === bookId
+}
+
+function setAdding(bookId) {
+  state.value.isAdding.status = true
+  state.value.isAdding.id = bookId
+}
+
+function clearAdding() {
+  state.value.isAdding.status = false
+  state.value.isAdding.id = null
+}
+
 async function getNewBooks() {
   state.value.isLoading = true
   state.value.searchResult = await $fetch(`${googleBooksApiURL}/volumes?q=${state.value.searchQuery}`,
@@ -105,6 +123,7 @@ async function getNewBooks() {
 }
 
 async function addBook(id) {
+  setAdding(id)
   const item = state.value.searchResult.items.find(element => element.id === id)
   const title = item.volumeInfo.title
   const thumbnail = 'imageLinks' in item.volumeInfo
@@ -125,7 +144,7 @@ async function addBook(id) {
         switch (response.status) {
           case 200: break
           case 401: useRouter().push('/login'); break
-          default: notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
+          default: notify({ type: "error", title: "Error", text: "Oops! Something went wrong." }); clearAdding()
         }
       }
     })
@@ -146,10 +165,12 @@ async function addBook(id) {
         switch (response.status) {
           case 201: notify({ type: "success", title: "Success", text: "The book has been added." }); break
           case 401: useRouter().push('/login'); break
-          default: notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
+          default: notify({ type: "error", title: "Error", text: "Oops! Something went wrong." }); clearAdding()
         }
       }
     })
+
+  clearAdding()
 }
 </script>
 

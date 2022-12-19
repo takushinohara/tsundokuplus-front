@@ -7,57 +7,63 @@
       </button>
     </div>
 
-    <div class="max-w-screen-lg flex flex-col lg:flex-row items-center gap-8 p-8 mx-auto">
-
-      <div class="border rounded-lg overflow-hidden">
-        <div class="h-48 bg-gray-100">
-          <img
-            :src="book.thumbnail.replace('http', 'https')"
-            loading="lazy"
-            :alt="book.title"
-            class="w-full h-full object-cover object-center"
-          />
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 gap-4 w-full">
-        <div>
-          <div class="font-semibold mb-1">Title</div>
-          <p class="text-sm text-gray-500"> {{ book.title }} </p>
-        </div>
-        <div>
-          <div class="font-semibold mb-1">Authors</div>
-          <p class="text-sm text-gray-500"> {{ book.author }} </p>
-        </div>
-        <div>
-          <div class="font-semibold mb-1">Publisher</div>
-          <p class="text-sm text-gray-500"> {{ book.publisher }} </p>
-        </div>
-      </div>
-
+    <div v-if="state.isLoading">
+      <Loading />
     </div>
+    <div v-else>
+      <div class="max-w-screen-lg flex flex-col lg:flex-row items-center gap-8 p-8 mx-auto">
 
-    <div class="max-w-screen-lg px-4 md:px-8 mx-auto">
-      <label for="message" class="block mb-2 text-sm font-medium">Note</label>
-      <textarea
-          id="message"
-          v-model="state.note.contents"
-          rows="4"
-          class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Your note...">
+        <div class="border rounded-lg overflow-hidden">
+          <div class="h-48 bg-gray-100">
+            <img
+                :src="book.thumbnail.replace('http', 'https')"
+                loading="lazy"
+                :alt="book.title"
+                class="w-full h-full object-cover object-center"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 w-full">
+          <div>
+            <div class="font-semibold mb-1">Title</div>
+            <p class="text-sm text-gray-500"> {{ book.title }} </p>
+          </div>
+          <div>
+            <div class="font-semibold mb-1">Authors</div>
+            <p class="text-sm text-gray-500"> {{ book.author }} </p>
+          </div>
+          <div>
+            <div class="font-semibold mb-1">Publisher</div>
+            <p class="text-sm text-gray-500"> {{ book.publisher }} </p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="max-w-screen-lg px-4 md:px-8 mx-auto">
+        <label for="message" class="block mb-2 text-sm font-medium">Note</label>
+        <textarea
+            id="message"
+            v-model="state.note.contents"
+            rows="4"
+            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Your note...">
       </textarea>
-      <p class="text-sm text-gray-500"> Last updated at {{ state.note.updatedAt }} </p>
-    </div>
+        <p class="text-sm text-gray-500"> Last updated at {{ state.note.updatedAt }} </p>
+      </div>
 
-    <div class="max-w-screen-lg px-4 md:px-8 mx-auto">
-      <div class="flex justify-between items-center py-4 md:py-8">
-        <button @click="save" class="inline-block bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 focus-visible:ring ring-indigo-300 text-white text-sm md:text-base font-medium text-center rounded-lg outline-none transition duration-100 px-4 py-2">
-          Save
-        </button>
+      <div class="max-w-screen-lg px-4 md:px-8 mx-auto">
+        <div class="flex justify-between items-center py-4 md:py-8">
+          <button @click="save" :disabled="state.isSaving" class="inline-block bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 focus-visible:ring ring-indigo-300 text-white text-sm md:text-base font-medium text-center rounded-lg outline-none transition duration-100 px-4 py-2">
+            <LoadingButtonIcon :show="state.isSaving"/>
+            {{ state.isSaving ? "Saving..." : "Save" }}
+          </button>
 
-        <button @click="state.openModal = true" class="inline-block bg-red-500 hover:bg-red-600 active:bg-indigo-700 focus-visible:ring ring-indigo-300 text-white text-sm md:text-base font-medium text-center rounded-lg outline-none transition duration-100 px-4 py-2">
-          Delete
-        </button>
+          <button @click="state.openModal = true" class="inline-block bg-red-500 hover:bg-red-600 active:bg-indigo-700 focus-visible:ring ring-indigo-300 text-white text-sm md:text-base font-medium text-center rounded-lg outline-none transition duration-100 px-4 py-2">
+            Delete
+          </button>
+        </div>
       </div>
     </div>
 
@@ -85,10 +91,11 @@
                   </div>
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                  <button type="button" class="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm" @click="deleteBook">
-                    Delete
+                  <button :disabled="state.isDeleting" type="button" class="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm" @click="deleteBook">
+                    <LoadingButtonIcon :show="state.isDeleting" />
+                    {{ state.isDeleting ? "Deleting..." : "Delete" }}
                   </button>
-                  <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" @click="state.openModal = false" ref="cancelButtonRef">
+                  <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" @click="state.openModal = false" ref="cancelButtonRef">
                     Cancel
                   </button>
                 </div>
@@ -111,6 +118,7 @@ import { computed, onMounted, ref } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 import { useNotification } from "@kyvg/vue3-notification";
+import { Loading, LoadingButtonIcon } from "#components";
 
 const { notify } = useNotification()
 const route = useRoute()
@@ -120,7 +128,9 @@ const state = ref({
   isLoading: false,
   fetchResult: '',
   note: '',
-  openModal: false
+  openModal: false,
+  isSaving: false,
+  isDeleting: false
 })
 
 async function getBook() {
@@ -132,7 +142,9 @@ async function getBook() {
         switch (response.status) {
           case 200: break
           case 401: useRouter().push('/login'); break
-          default: notify({ title: "Test", text: "This is Test!" });
+          default:
+            notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
+            state.value.isLoading = false
         }
       }
     })
@@ -141,6 +153,7 @@ async function getBook() {
 }
 
 async function save() {
+  state.value.isSaving = true
   const csrfToken = await $fetch(`${config.public.tsundokuApiBaseUrl}/csrf-token`,
     {
       credentials: 'include',
@@ -148,7 +161,9 @@ async function save() {
         switch (response.status) {
           case 200: break
           case 401: useRouter().push('/login'); break
-          default:  notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
+          default:
+            notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
+            state.value.isSaving = false
         }
       }
     })
@@ -162,13 +177,18 @@ async function save() {
         switch (response.status) {
           case 204: notify({ type: "success", title: "Success", text: "The book has been saved." }); break
           case 401: useRouter().push('/login'); break
-          default: notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
+          default:
+            notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
+            state.value.isSaving = false
         }
       }
     }).then(getBook)
+
+  state.value.isSaving = false
 }
 
 async function deleteBook() {
+  state.value.isDeleting = true
   const csrfToken = await $fetch(`${config.public.tsundokuApiBaseUrl}/csrf-token`,
     {
       credentials: 'include',
@@ -176,7 +196,9 @@ async function deleteBook() {
         switch (response.status) {
           case 200: break
           case 401: useRouter().push('/login'); break
-          default: notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
+          default:
+            notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
+            state.value.isDeleting = false
         }
       }
     })
@@ -192,10 +214,14 @@ async function deleteBook() {
             notify({ type: "success", title: "Success", text: "The book has been deleted." });
             useRouter().push('/home'); break
           case 401: useRouter().push('/login'); break
-          default: notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
+          default:
+            notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
+            state.value.isDeleting = false
         }
       }
     })
+
+  state.value.isDeleting = false
 }
 
 const book = computed(() => {
