@@ -1,23 +1,22 @@
-# Nuxt 3 Minimal Starter
+# Tsundokuplus Front
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Frontend application for [Tsundoku+](http://tsundokuplus.com)
 
 ## Setup
 
 Make sure to install the dependencies:
 
 ```bash
-# yarn
-yarn install
-
-# npm
 npm install
-
-# pnpm
-pnpm install --shamefully-hoist
 ```
 
 ## Development Server
+
+Create .env file:
+
+```bash
+cp .env.example .env
+```
 
 Start the development server on http://localhost:3000
 
@@ -25,18 +24,4 @@ Start the development server on http://localhost:3000
 npm run dev
 ```
 
-## Production
-
-Build the application for production:
-
-```bash
-npm run build
-```
-
-Locally preview production build:
-
-```bash
-npm run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Then, you can log in with a test user created in the backend application. Refer to the README file to [set up the backend application](https://github.com/takushinohara/tsundokuplus-api#setup-for-development-server).
