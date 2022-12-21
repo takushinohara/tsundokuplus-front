@@ -16,10 +16,10 @@
         <div class="border rounded-lg overflow-hidden">
           <div class="h-48 bg-gray-100">
             <img
-                :src="book.thumbnail.replace('http', 'https')"
-                loading="lazy"
-                :alt="book.title"
-                class="w-full h-full object-cover object-center"
+              :src="book.thumbnail.replace('http', 'https')"
+              loading="lazy"
+              :alt="book.title"
+              class="w-full h-full object-cover object-center"
             />
           </div>
         </div>
@@ -44,13 +44,14 @@
       <div class="max-w-screen-lg px-4 md:px-8 mx-auto">
         <label for="message" class="block mb-2 text-sm font-medium">Note</label>
         <textarea
-            id="message"
-            v-model="state.note.contents"
-            rows="4"
-            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Your note...">
+          id="message"
+          rows="4"
+          class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Your note..."
+          v-model="state.note.contents"
+        >
       </textarea>
-        <p class="text-sm text-gray-500"> Last updated at {{ state.note.updatedAt }} </p>
+        <p class="text-sm text-gray-500"> Last updated at {{ convertToJST(state.note.updatedAt) }} </p>
       </div>
 
       <div class="max-w-screen-lg px-4 md:px-8 mx-auto">
@@ -132,6 +133,12 @@ const state = ref({
   isSaving: false,
   isDeleting: false
 })
+
+function convertToJST(value: string) {
+  const date = new Date(value)
+  date.setHours(date.getHours() + 9);
+  return date.toLocaleString()
+}
 
 async function getBook() {
   state.value.isLoading = true

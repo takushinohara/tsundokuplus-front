@@ -4,7 +4,13 @@
     <div class="max-w-screen-2xl px-4 md:px-8 mx-auto">
       <div class="flex justify-between items-end gap-4 mb-6">
         <div class="w-full md:max-w-md flex gap-2">
-          <input v-model="state.filterKeyword" placeholder="Filter your books" class="w-full flex-1 bg-gray-50 text-gray-800 placeholder-gray-500 border focus:ring ring-indigo-300 rounded outline-none transition duration-100 px-3 py-2" />
+          <input
+            type="search"
+            placeholder="Filter your books"
+            class="w-full flex-1 bg-gray-50 text-gray-800 border focus:ring ring-indigo-300 rounded outline-none transition duration-100 px-3 py-2"
+            v-model="state.filterKeyword"
+            :disabled="!books.length"
+          />
         </div>
 
         <NuxtLink to="/add" class="inline-block bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 focus-visible:ring ring-indigo-300 text-white text-sm md:text-base font-semibold text-center rounded outline-none transition duration-100 px-8 py-2">

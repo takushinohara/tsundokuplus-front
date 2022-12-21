@@ -1,6 +1,5 @@
 <template>
-  <BookSearch>
-  </BookSearch>
+  <BookSearch />
 </template>
 
 <script setup lang="ts">
@@ -8,7 +7,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-import BookSearch from "../components/BookSearch";
+import { BookSearch } from "#components";
 </script>
 
 <style scoped>
