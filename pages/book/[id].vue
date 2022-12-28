@@ -149,6 +149,7 @@ async function getBook() {
         switch (response.status) {
           case 200: break
           case 401: useRouter().push('/login'); break
+          case 404: useRouter().push('/errors/404'); break
           default:
             notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
             state.value.isLoading = false
@@ -184,6 +185,7 @@ async function save() {
         switch (response.status) {
           case 204: notify({ type: "success", title: "Success", text: "The book has been saved." }); break
           case 401: useRouter().push('/login'); break
+          case 404: useRouter().push('/errors/404'); break
           default:
             notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
             state.value.isSaving = false
@@ -221,6 +223,7 @@ async function deleteBook() {
             notify({ type: "success", title: "Success", text: "The book has been deleted." });
             useRouter().push('/home'); break
           case 401: useRouter().push('/login'); break
+          case 404: useRouter().push('/errors/404'); break
           default:
             notify({ type: "error", title: "Error", text: "Oops! Something went wrong." })
             state.value.isDeleting = false
