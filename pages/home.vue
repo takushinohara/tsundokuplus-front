@@ -8,7 +8,7 @@
             placeholder="Filter your books"
             class="w-full bg-gray-50 text-gray-800 border focus:ring ring-indigo-300 rounded outline-none transition duration-100 px-3 py-2"
             v-model="state.filterKeyword"
-            :disabled="!books.length"
+            :disabled="state.hasNoBooks"
           />
         </div>
 
@@ -28,7 +28,7 @@
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-x-4 md:gap-x-8 gap-y-12">
           <div v-if="books.length" v-for="tsundoku in filteredBooks">
             <div>
-              <NuxtLink :to="`/book/${tsundoku.id}`" class="group h-48 block rounded-lg overflow-hidden relative mb-2 lg:mb-3">
+              <NuxtLink :to="`/books/${tsundoku.id}`" class="group h-48 block rounded-lg overflow-hidden relative mb-2 lg:mb-3">
                 <img
                   :src="tsundoku.thumbnail.replace('http', 'https')"
                   loading="lazy"
@@ -38,7 +38,7 @@
               </NuxtLink>
 
               <div>
-                <NuxtLink :to="`/book/${tsundoku.id}`" class="text-gray-500 hover:text-gray-800 text-sm font-semibold transition duration-100 mb-1">{{ tsundoku.title }}</NuxtLink>
+                <NuxtLink :to="`/books/${tsundoku.id}`" class="text-gray-500 hover:text-gray-800 text-sm font-semibold transition duration-100 mb-1">{{ tsundoku.title }}</NuxtLink>
 
                 <div class="flex items-end gap-2">
                   <span class="text-gray-500 text-sm">{{ tsundoku.author }}</span>
@@ -72,19 +72,19 @@ const config = useRuntimeConfig()
 const state = ref({
   isLoading: false,
   fetchResult: {
-    bookList: []
+    books: []
   },
   filterKeyword: '',
   hasNoBooks: false
 })
 
 const books = computed(() => {
-  return state.value.fetchResult.bookList
+  return state.value.fetchResult.books
 })
 
 const filteredBooks = computed(() => {
   const targetKeys = ["title", "author", "publisher"]
-  let data = state.value.fetchResult.bookList
+  let data = state.value.fetchResult.books
   let keyword = state.value.filterKeyword
   if (keyword) {
     keyword = keyword.toLowerCase()
@@ -101,7 +101,7 @@ const filteredBooks = computed(() => {
 
 async function getBooks() {
   state.value.isLoading = true
-  state.value.fetchResult = await $fetch(`${config.public.tsundokuApiBaseUrl}/book/list`,
+  state.value.fetchResult = await $fetch(`${config.public.tsundokuApiBaseUrl}/books`,
     {
       credentials: 'include',
       async onResponse({ response }) {
@@ -114,7 +114,7 @@ async function getBooks() {
     })
   state.value.isLoading = false
 
-  state.value.hasNoBooks = state.value.fetchResult.bookList.length === 0;
+  state.value.hasNoBooks = state.value.fetchResult.books.length === 0;
 }
 
 onMounted(() => {

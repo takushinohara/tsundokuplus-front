@@ -148,7 +148,7 @@ async function addBook(id) {
       }
     })
 
-  await $fetch(`${config.public.tsundokuApiBaseUrl}/book`,
+  await $fetch(`${config.public.tsundokuApiBaseUrl}/books`,
     {
       method: 'POST',
       headers: { 'X-CSRF-TOKEN': csrfToken.token },

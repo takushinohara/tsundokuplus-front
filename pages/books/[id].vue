@@ -142,7 +142,7 @@ function convertToJST(value: string) {
 
 async function getBook() {
   state.value.isLoading = true
-  state.value.fetchResult = await $fetch(`${config.public.tsundokuApiBaseUrl}/book/${route.params.id}`,
+  state.value.fetchResult = await $fetch(`${config.public.tsundokuApiBaseUrl}/books/${route.params.id}`,
     {
       credentials: 'include',
       async onResponse({ response }) {
@@ -175,7 +175,7 @@ async function save() {
         }
       }
     })
-  await $fetch(`${config.public.tsundokuApiBaseUrl}/book/${route.params.id}`,
+  await $fetch(`${config.public.tsundokuApiBaseUrl}/books/${route.params.id}`,
     {
       method: 'PUT',
       headers: { 'X-CSRF-TOKEN': csrfToken.token },
@@ -211,7 +211,7 @@ async function deleteBook() {
         }
       }
     })
-  await $fetch(`${config.public.tsundokuApiBaseUrl}/book/${route.params.id}`,
+  await $fetch(`${config.public.tsundokuApiBaseUrl}/books/${route.params.id}`,
     {
       method: 'DELETE',
       headers: { 'X-CSRF-TOKEN': csrfToken.token },
