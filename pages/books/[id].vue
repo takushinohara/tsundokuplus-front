@@ -248,7 +248,7 @@ const book = computed(() => {
       title: "loading...",
       author: "loading...",
       publisher: "loading...",
-      thumbnail: "loading..."
+      thumbnail: ""
     }
   }
 })
